@@ -1,5 +1,5 @@
-import React from "react";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import React, { useCallback } from "react";
+import { DataGrid, GridColDef, GridSortModel } from "@mui/x-data-grid";
 import { Person } from "../types";
 import { Box } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
@@ -8,13 +8,21 @@ import {
 	setOffset,
 	setPageSize,
 	setRowSelectionModel,
+	setSort,
+	setSortDirection,
 } from "../redux/gridSlice";
 
 export default function Table() {
+	const dispatch = useDispatch();
 	const { items, loading, pageSize, rowCount, rowSelectionModel } = useSelector(
 		(state: RootState) => state.grid
 	);
-	const dispatch = useDispatch();
+
+	const handleSortModelChange = useCallback((sortModel: GridSortModel) => {
+		dispatch(setSortDirection(sortModel[0].sort));
+		dispatch(setSort(sortModel[0].field as keyof Person));
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	const columns: GridColDef[] = [
 		{ field: "id", headerName: "ID", width: 70 },
@@ -73,6 +81,8 @@ export default function Table() {
 				onRowSelectionModelChange={(newRowSelectionModel) => {
 					dispatch(setRowSelectionModel(newRowSelectionModel));
 				}}
+				sortingMode="server"
+				onSortModelChange={handleSortModelChange}
 			/>
 		</Box>
 	);
