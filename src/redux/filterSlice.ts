@@ -1,12 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { EmployeeType, PersonRole } from "../types";
-
-export type FilterState = {
-	search: string;
-	role: PersonRole;
-	employeeType: EmployeeType;
-};
+import { EmployeeType, FilterState, PersonRole } from "../types";
 
 const initialState: FilterState = {
 	search: "",

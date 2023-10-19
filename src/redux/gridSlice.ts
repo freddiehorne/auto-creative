@@ -1,16 +1,7 @@
 import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { Person } from "../types";
-
-export type GridState = {
-	rowSelectionModel: GridRowSelectionModel;
-	offset: number;
-	pageSize: number;
-	items: Person[];
-	rowCount: number;
-	loading: boolean;
-};
+import { GridState, Person } from "../types";
 
 const initialState: GridState = {
 	rowSelectionModel: [],
@@ -19,6 +10,8 @@ const initialState: GridState = {
 	items: [],
 	rowCount: 0,
 	loading: false,
+	sort: null,
+	sortDirection: null,
 };
 
 export const gridSlice = createSlice({
@@ -46,6 +39,15 @@ export const gridSlice = createSlice({
 		setLoading: (state, action: PayloadAction<boolean>) => {
 			state.loading = action.payload;
 		},
+		setSort: (state, action: PayloadAction<keyof Person | null>) => {
+			state.sort = action.payload;
+		},
+		setSortDirection: (
+			state,
+			action: PayloadAction<"asc" | "desc" | null | undefined>
+		) => {
+			state.sortDirection = action.payload;
+		},
 	},
 });
 
@@ -56,6 +58,8 @@ export const {
 	setItems,
 	setRowCount,
 	setLoading,
+	setSort,
+	setSortDirection,
 } = gridSlice.actions;
 
 export default gridSlice.reducer;

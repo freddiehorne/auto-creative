@@ -24,14 +24,13 @@ import { setErrorMessage, setShowDrawer } from "../redux/uiSlice";
 function App() {
 	const dispatch = useDispatch();
 	// UI state
-	const { errorMessage, showDrawer, sort, sortDirection } = useSelector(
+	const { errorMessage, showDrawer } = useSelector(
 		(state: RootState) => state.ui
 	);
 
 	// Grid state
-	const { rowSelectionModel, pageSize, offset, rowCount } = useSelector(
-		(state: RootState) => state.grid
-	);
+	const { rowSelectionModel, pageSize, offset, rowCount, sort, sortDirection } =
+		useSelector((state: RootState) => state.grid);
 
 	// Filter state
 	const { search, role, employeeType } = useSelector(
