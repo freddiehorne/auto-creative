@@ -22,6 +22,9 @@ export const filterSlice = createSlice({
 			state.search = action.payload;
 		},
 		setRole: (state, action: PayloadAction<PersonRole>) => {
+			if (action.payload === "ANY" || action.payload === "STUDENT") {
+				state.employeeType = "ANY";
+			}
 			state.role = action.payload;
 		},
 		setEmployeeType: (state, action: PayloadAction<EmployeeType>) => {
