@@ -26,6 +26,12 @@ export default function Table() {
 		},
 		{ field: "lastName", headerName: "Last Name", width: 150, editable: true },
 		{
+			field: "email",
+			headerName: "Email",
+			width: 250,
+			editable: true,
+		},
+		{
 			field: "role",
 			headerName: "Role",
 			width: 150,
