@@ -9,14 +9,20 @@ import {
 	Typography,
 } from "@mui/material";
 import { queryApi } from "../api";
-import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { Person } from "../types";
 import Table from "./Table";
 import { Filter } from "./Filter";
 import { RootState } from "../redux/store";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import {
+	setItems,
+	setLoading,
+	setRowCount,
+	setRowSelectionModel,
+} from "../redux/gridSlice";
 
 function App() {
+	const dispatch = useDispatch();
 	// UI state
 	const [sort, setSort] = React.useState<keyof Person | null>(null);
 	const [showDrawer, setShowDrawer] = React.useState<boolean>(false);
@@ -26,13 +32,9 @@ function App() {
 	const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
 
 	// Grid state
-	const [rowSelectionModel, setRowSelectionModel] =
-		React.useState<GridRowSelectionModel>([]);
-	const [offset, setOffset] = React.useState<number>(0);
-	const [pageSize, setPageSize] = React.useState<number>(10);
-	const [items, setItems] = React.useState<Person[]>([]);
-	const [count, setCount] = React.useState<number>(0);
-	const [loading, setLoading] = React.useState<boolean>(true);
+	const { rowSelectionModel, pageSize, offset, rowCount } = useSelector(
+		(state: RootState) => state.grid
+	);
 
 	// Filter state
 	const { search, role, employeeType } = useSelector(
@@ -44,17 +46,26 @@ function App() {
 	}, [rowSelectionModel]);
 
 	useEffect(() => {
-		setLoading(true);
+		dispatch(setLoading(true));
 		queryApi(search, role, employeeType, offset, pageSize, sort, sortDirection)
 			.then(({ items, count }) => {
-				setItems(items);
-				setCount(count);
-				setLoading(false);
+				dispatch(setItems(items));
+				dispatch(setRowCount(rowCount));
+				dispatch(setLoading(false));
 			})
 			.catch(() =>
 				setErrorMessage("There has been an error loading from the API.")
 			);
-	}, [search, role, employeeType, offset, pageSize, sort, sortDirection]);
+	}, [
+		search,
+		role,
+		employeeType,
+		offset,
+		pageSize,
+		sort,
+		sortDirection,
+		rowCount,
+	]);
 
 	return (
 		<Container>
@@ -73,16 +84,7 @@ function App() {
 
 				<Filter />
 
-				<Table
-					items={items}
-					loading={loading}
-					rowCount={count}
-					pageSize={pageSize}
-					rowSelectionModel={rowSelectionModel}
-					setRowSelectionModel={setRowSelectionModel}
-					setOffset={setOffset}
-					setPageSize={setPageSize}
-				/>
+				<Table />
 
 				<Drawer
 					anchor="bottom"
@@ -92,7 +94,10 @@ function App() {
 					variant="persistent"
 				>
 					<Box sx={{ bgcolor: "black", p: 4, color: "white" }}>
-						<Button color="primary" onClick={() => setRowSelectionModel([])}>
+						<Button
+							color="primary"
+							onClick={() => dispatch(setRowSelectionModel([]))}
+						>
 							Export {rowSelectionModel.length} item(s) ➡️{" "}
 						</Button>
 					</Box>

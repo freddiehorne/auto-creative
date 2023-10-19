@@ -8,7 +8,7 @@ export type GridState = {
 	offset: number;
 	pageSize: number;
 	items: Person[];
-	count: number;
+	rowCount: number;
 	loading: boolean;
 };
 
@@ -17,7 +17,7 @@ const initialState: GridState = {
 	offset: 0,
 	pageSize: 10,
 	items: [],
-	count: 0,
+	rowCount: 0,
 	loading: false,
 };
 
@@ -40,8 +40,8 @@ export const gridSlice = createSlice({
 		setItems: (state, action: PayloadAction<Person[]>) => {
 			state.items = action.payload;
 		},
-		setCount: (state, action: PayloadAction<number>) => {
-			state.count = action.payload;
+		setRowCount: (state, action: PayloadAction<number>) => {
+			state.rowCount = action.payload;
 		},
 		setLoading: (state, action: PayloadAction<boolean>) => {
 			state.loading = action.payload;
@@ -54,7 +54,7 @@ export const {
 	setOffset,
 	setPageSize,
 	setItems,
-	setCount,
+	setRowCount,
 	setLoading,
 } = gridSlice.actions;
 
