@@ -9,7 +9,6 @@ import {
 	Typography,
 } from "@mui/material";
 import { queryApi } from "../api";
-import { Person } from "../types";
 import Table from "./Table";
 import { Filter } from "./Filter";
 import { RootState } from "../redux/store";
@@ -20,16 +19,14 @@ import {
 	setRowCount,
 	setRowSelectionModel,
 } from "../redux/gridSlice";
+import { setErrorMessage, setShowDrawer } from "../redux/uiSlice";
 
 function App() {
 	const dispatch = useDispatch();
 	// UI state
-	const [sort, setSort] = React.useState<keyof Person | null>(null);
-	const [showDrawer, setShowDrawer] = React.useState<boolean>(false);
-	const [sortDirection, setSortDirection] = React.useState<
-		"asc" | "desc" | null | undefined
-	>(null);
-	const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
+	const { errorMessage, showDrawer, sort, sortDirection } = useSelector(
+		(state: RootState) => state.ui
+	);
 
 	// Grid state
 	const { rowSelectionModel, pageSize, offset, rowCount } = useSelector(
@@ -42,7 +39,8 @@ function App() {
 	);
 
 	useEffect(() => {
-		setShowDrawer(rowSelectionModel.length > 0);
+		dispatch(setShowDrawer(rowSelectionModel.length > 0));
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [rowSelectionModel]);
 
 	useEffect(() => {
@@ -54,8 +52,11 @@ function App() {
 				dispatch(setLoading(false));
 			})
 			.catch(() =>
-				setErrorMessage("There has been an error loading from the API.")
+				dispatch(
+					setErrorMessage("There has been an error loading from the API.")
+				)
 			);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [
 		search,
 		role,
