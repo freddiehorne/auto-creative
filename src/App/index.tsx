@@ -45,7 +45,7 @@ function App() {
 	useEffect(() => {
 		dispatch(setLoading(true));
 		queryApi(search, role, employeeType, offset, pageSize, sort, sortDirection)
-			.then(({ items, count }) => {
+			.then(({ items, rowCount }) => {
 				dispatch(setItems(items));
 				dispatch(setRowCount(rowCount));
 				dispatch(setLoading(false));
