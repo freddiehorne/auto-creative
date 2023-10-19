@@ -10,9 +10,11 @@ import {
 } from "@mui/material";
 import { queryApi } from "../api";
 import { GridRowSelectionModel } from "@mui/x-data-grid";
-import { EmployeeType, Person, PersonRole } from "../types";
+import { Person } from "../types";
 import Table from "./Table";
 import { Filter } from "./Filter";
+import { RootState } from "../redux/store";
+import { useSelector } from "react-redux";
 
 function App() {
 	// UI state
@@ -33,9 +35,9 @@ function App() {
 	const [loading, setLoading] = React.useState<boolean>(true);
 
 	// Filter state
-	const [search, setSearch] = React.useState<string>("");
-	const [role, setRole] = React.useState<PersonRole>("ANY");
-	const [employeeType, setEmployeeType] = React.useState<EmployeeType>("ANY");
+	const { search, role, employeeType } = useSelector(
+		(state: RootState) => state.filter
+	);
 
 	useEffect(() => {
 		setShowDrawer(rowSelectionModel.length > 0);
@@ -69,16 +71,7 @@ function App() {
 					<Typography variant="h4">Person Admin</Typography>
 				</Box>
 
-				<Filter
-					{...{
-						search,
-						setSearch,
-						role,
-						setRole,
-						employeeType,
-						setEmployeeType,
-					}}
-				/>
+				<Filter />
 
 				<Table
 					items={items}
