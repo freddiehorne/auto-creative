@@ -1,10 +1,8 @@
 import { configureStore } from "@reduxjs/toolkit";
-import filterReducer from "./filterSlice";
 import gridReducer from "./gridSlice";
 
 export const store = configureStore({
 	reducer: {
-		filter: filterReducer,
 		grid: gridReducer,
 	},
 });

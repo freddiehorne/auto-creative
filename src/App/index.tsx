@@ -19,6 +19,8 @@ import {
 	setRowCount,
 	setRowSelectionModel,
 } from "../redux/gridSlice";
+import { EmployeeType, PersonRole } from "../types";
+import { useSearchParams } from "react-router-dom";
 
 function App() {
 	const dispatch = useDispatch();
@@ -31,9 +33,16 @@ function App() {
 		useSelector((state: RootState) => state.grid);
 
 	// Filter state
-	const { search, role, employeeType } = useSelector(
-		(state: RootState) => state.filter
-	);
+	const [searchParams] = useSearchParams({
+		search: "",
+		role: "ANY",
+		employeeType: "ANY",
+	});
+
+	const search = searchParams.get("search") ?? "";
+	const role = (searchParams.get("role") as PersonRole) ?? "ANY";
+	const employeeType =
+		(searchParams.get("employeeType") as EmployeeType) ?? "ANY";
 
 	useEffect(() => {
 		setShowDrawer(rowSelectionModel.length > 0);

@@ -1,4 +1,3 @@
-import React from "react";
 import {
 	Box,
 	Button,
@@ -11,21 +10,41 @@ import {
 	Typography,
 } from "@mui/material";
 import { EmployeeType, PersonRole } from "../types";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../redux/store";
-import { setEmployeeType, setRole, setSearch } from "../redux/filterSlice";
+import { useSearchParams } from "react-router-dom";
+import { useEffect } from "react";
 
 export function Filter() {
-	const { search, role, employeeType } = useSelector(
-		(state: RootState) => state.filter
-	);
-	const dispatch = useDispatch();
+	const [searchParams, setSearchParams] = useSearchParams({
+		search: "",
+		role: "ANY",
+		employeeType: "ANY",
+	});
+
+	const search = searchParams.get("search") ?? "";
+	const role = (searchParams.get("role") as PersonRole) ?? "ANY";
+	const employeeType =
+		(searchParams.get("employeeType") as EmployeeType) ?? "ANY";
 
 	const onReset = () => {
-		dispatch(setSearch(""));
-		dispatch(setRole("ANY"));
-		dispatch(setEmployeeType("ANY"));
+		setSearchParams((prev) => {
+			prev.set("search", "");
+			prev.set("role", "ANY");
+			prev.set("employeeType", "ANY");
+			return prev;
+		});
 	};
+
+	useEffect(() => {
+		if (role === "STUDENT" || role === "ANY") {
+			setSearchParams(
+				(prev) => {
+					prev.set("employeeType", "ANY");
+					return prev;
+				},
+				{ replace: true }
+			);
+		}
+	}, [role, setSearchParams]);
 
 	return (
 		<Box my={4}>
@@ -35,7 +54,15 @@ export function Filter() {
 					name="search"
 					label="Search"
 					variant="outlined"
-					onChange={(e) => dispatch(setSearch(e.target.value))}
+					onChange={(e) =>
+						setSearchParams(
+							(prev) => {
+								prev.set("search", e.target.value);
+								return prev;
+							},
+							{ replace: true }
+						)
+					}
 					value={search}
 				/>
 
@@ -46,7 +73,15 @@ export function Filter() {
 						id="role"
 						name="role"
 						label="Role"
-						onChange={(e) => dispatch(setRole(e.target.value as PersonRole))}
+						onChange={(e) =>
+							setSearchParams(
+								(prev) => {
+									prev.set("role", e.target.value as PersonRole);
+									return prev;
+								},
+								{ replace: true }
+							)
+						}
 						value={role}
 					>
 						<MenuItem value="ANY">Any</MenuItem>
@@ -63,10 +98,16 @@ export function Filter() {
 						name="employee"
 						label="Employee Type"
 						onChange={(e) =>
-							dispatch(setEmployeeType(e.target.value as EmployeeType))
+							setSearchParams(
+								(prev) => {
+									prev.set("employeeType", e.target.value as EmployeeType);
+									return prev;
+								},
+								{ replace: true }
+							)
 						}
 						value={employeeType}
-						disabled={role === "STUDENT"}
+						disabled={role !== "EMPLOYEE"}
 					>
 						<MenuItem value="ANY">Any</MenuItem>
 						<MenuItem value="FULL_TIME">Full-Time</MenuItem>
