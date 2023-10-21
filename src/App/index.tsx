@@ -19,14 +19,12 @@ import {
 	setRowCount,
 	setRowSelectionModel,
 } from "../redux/gridSlice";
-import { setErrorMessage, setShowDrawer } from "../redux/uiSlice";
 
 function App() {
 	const dispatch = useDispatch();
 	// UI state
-	const { errorMessage, showDrawer } = useSelector(
-		(state: RootState) => state.ui
-	);
+	const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
+	const [showDrawer, setShowDrawer] = React.useState(false);
 
 	// Grid state
 	const { rowSelectionModel, pageSize, offset, rowCount, sort, sortDirection } =
@@ -38,8 +36,7 @@ function App() {
 	);
 
 	useEffect(() => {
-		dispatch(setShowDrawer(rowSelectionModel.length > 0));
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		setShowDrawer(rowSelectionModel.length > 0);
 	}, [rowSelectionModel]);
 
 	useEffect(() => {
@@ -51,11 +48,8 @@ function App() {
 				dispatch(setLoading(false));
 			})
 			.catch(() =>
-				dispatch(
-					setErrorMessage("There has been an error loading from the API.")
-				)
+				setErrorMessage("There has been an error loading from the API.")
 			);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [
 		search,
 		role,
@@ -65,6 +59,7 @@ function App() {
 		sort,
 		sortDirection,
 		rowCount,
+		dispatch,
 	]);
 
 	return (

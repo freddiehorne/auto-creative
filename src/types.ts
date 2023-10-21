@@ -28,8 +28,3 @@ export type FilterState = {
 	role: PersonRole;
 	employeeType: EmployeeType;
 };
-
-export type UiType = {
-	showDrawer: boolean;
-	errorMessage: string | null;
-};
