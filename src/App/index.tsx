@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
 	Box,
 	Button,
@@ -19,32 +19,30 @@ import {
 	setRowCount,
 	setRowSelectionModel,
 } from "../redux/gridSlice";
-import { EmployeeType, Person, PersonRole } from "../types";
 import { useSearchParams } from "react-router-dom";
+import { paramsSchema } from "../schemas";
 
 function App() {
 	const dispatch = useDispatch();
 	const [searchParams] = useSearchParams();
-	// UI state
-	const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
-	const [showDrawer, setShowDrawer] = React.useState(false);
+	const [errorMessage, setErrorMessage] = useState<string | null>(null);
+	const [showDrawer, setShowDrawer] = useState(false);
 
-	// Grid state
 	const { rowSelectionModel, rowCount } = useSelector(
 		(state: RootState) => state.grid
 	);
 
-	const offset = parseInt(searchParams.get("offset") ?? "0", 10);
-	const pageSize = parseInt(searchParams.get("pageSize") ?? "10", 10);
-
-	const sort = searchParams.get("sort") as keyof Person;
-	const sortDirection = searchParams.get("sortDirection") as "asc" | "desc";
-
-	// Filter state
-	const search = searchParams.get("search") ?? "";
-	const role = (searchParams.get("role") as PersonRole) ?? "ANY";
-	const employeeType =
-		(searchParams.get("employeeType") as EmployeeType) ?? "ANY";
+	const params = paramsSchema.parse({
+		search: searchParams.get("search") ?? "",
+		role: searchParams.get("role") ?? "ANY",
+		employeeType: searchParams.get("employeeType") ?? "ANY",
+		offset: parseInt(searchParams.get("offset") ?? "0", 10),
+		pageSize: parseInt(searchParams.get("pageSize") ?? "10", 10),
+		sortDirection: searchParams.get("sortDirection"),
+		sort: searchParams.get("sort"),
+	});
+	const { search, role, employeeType, offset, pageSize, sortDirection, sort } =
+		params;
 
 	useEffect(() => {
 		setShowDrawer(rowSelectionModel.length > 0);

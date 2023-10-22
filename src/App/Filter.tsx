@@ -12,14 +12,17 @@ import {
 import { EmployeeType, PersonRole } from "../types";
 import { useSearchParams } from "react-router-dom";
 import { useEffect } from "react";
+import { filterSchema } from "../schemas";
 
 export function Filter() {
 	const [searchParams, setSearchParams] = useSearchParams();
 
-	const search = searchParams.get("search") ?? "";
-	const role = (searchParams.get("role") as PersonRole) ?? "ANY";
-	const employeeType =
-		(searchParams.get("employeeType") as EmployeeType) ?? "ANY";
+	const params = filterSchema.parse({
+		search: searchParams.get("search") ?? "",
+		role: searchParams.get("role") ?? "ANY",
+		employeeType: searchParams.get("employeeType") ?? "ANY",
+	});
+	const { search, role, employeeType } = params;
 
 	const onReset = () => {
 		setSearchParams({});
@@ -76,7 +79,7 @@ export function Filter() {
 						onChange={(e) =>
 							setSearchParams(
 								(prev) => {
-									prev.set("role", e.target.value as PersonRole);
+									prev.set("role", e.target.value);
 									return prev;
 								},
 								{ replace: true }
@@ -100,7 +103,7 @@ export function Filter() {
 						onChange={(e) =>
 							setSearchParams(
 								(prev) => {
-									prev.set("employeeType", e.target.value as EmployeeType);
+									prev.set("employeeType", e.target.value);
 									return prev;
 								},
 								{ replace: true }

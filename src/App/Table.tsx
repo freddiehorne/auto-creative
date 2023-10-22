@@ -13,6 +13,7 @@ import { RootState } from "../redux/store";
 import { setRowSelectionModel } from "../redux/gridSlice";
 import { useSearchParams } from "react-router-dom";
 import { mutateApi } from "../api";
+import { tableSchema } from "../schemas";
 
 export default function Table() {
 	const dispatch = useDispatch();
@@ -22,7 +23,10 @@ export default function Table() {
 
 	const [searchParams, setSearchParams] = useSearchParams();
 
-	const pageSize = parseInt(searchParams.get("pageSize") ?? "10", 10);
+	const params = tableSchema.parse({
+		pageSize: parseInt(searchParams.get("pageSize") ?? "10", 10),
+	});
+	const { pageSize } = params;
 
 	const sortingOrder: GridSortDirection[] = ["asc", "desc"];
 
