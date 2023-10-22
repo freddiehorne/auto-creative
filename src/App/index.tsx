@@ -19,26 +19,28 @@ import {
 	setRowCount,
 	setRowSelectionModel,
 } from "../redux/gridSlice";
-import { EmployeeType, PersonRole } from "../types";
+import { EmployeeType, Person, PersonRole } from "../types";
 import { useSearchParams } from "react-router-dom";
 
 function App() {
 	const dispatch = useDispatch();
+	const [searchParams] = useSearchParams();
 	// UI state
 	const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
 	const [showDrawer, setShowDrawer] = React.useState(false);
 
 	// Grid state
-	const { rowSelectionModel, pageSize, offset, rowCount, sort, sortDirection } =
-		useSelector((state: RootState) => state.grid);
+	const { rowSelectionModel, rowCount } = useSelector(
+		(state: RootState) => state.grid
+	);
+
+	const offset = parseInt(searchParams.get("offset") ?? "0", 10);
+	const pageSize = parseInt(searchParams.get("pageSize") ?? "10", 10);
+
+	const sort = searchParams.get("sort") as keyof Person;
+	const sortDirection = searchParams.get("sortDirection") as "asc" | "desc";
 
 	// Filter state
-	const [searchParams] = useSearchParams({
-		search: "",
-		role: "ANY",
-		employeeType: "ANY",
-	});
-
 	const search = searchParams.get("search") ?? "";
 	const role = (searchParams.get("role") as PersonRole) ?? "ANY";
 	const employeeType =

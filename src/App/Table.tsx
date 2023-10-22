@@ -4,25 +4,32 @@ import { Person } from "../types";
 import { Box } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
-import {
-	setOffset,
-	setPageSize,
-	setRowSelectionModel,
-	setSort,
-	setSortDirection,
-} from "../redux/gridSlice";
+import { setRowSelectionModel } from "../redux/gridSlice";
+import { useSearchParams } from "react-router-dom";
 
 export default function Table() {
 	const dispatch = useDispatch();
-	const { items, loading, pageSize, rowCount, rowSelectionModel } = useSelector(
+	const { items, loading, rowCount, rowSelectionModel } = useSelector(
 		(state: RootState) => state.grid
 	);
 
-	const handleSortModelChange = useCallback((sortModel: GridSortModel) => {
-		dispatch(setSortDirection(sortModel[0].sort));
-		dispatch(setSort(sortModel[0].field as keyof Person));
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+	const [searchParams, setSearchParams] = useSearchParams();
+
+	const pageSize = parseInt(searchParams.get("pageSize") ?? "10", 10);
+
+	const handleSortModelChange = useCallback(
+		(sortModel: GridSortModel) => {
+			setSearchParams(
+				(prev) => {
+					prev.set("sort", sortModel[0].field as string);
+					prev.set("sortDirection", sortModel[0].sort as string);
+					return prev;
+				},
+				{ replace: true }
+			);
+		},
+		[setSearchParams]
+	);
 
 	const columns: GridColDef[] = [
 		{ field: "id", headerName: "ID", width: 70 },
@@ -73,8 +80,20 @@ export default function Table() {
 				}}
 				pageSizeOptions={[10, 20, 50]}
 				onPaginationModelChange={({ page, pageSize }) => {
-					dispatch(setPageSize(pageSize));
-					dispatch(setOffset(pageSize * page));
+					setSearchParams(
+						(prev) => {
+							prev.set("pageSize", pageSize.toString());
+							return prev;
+						},
+						{ replace: true }
+					);
+					setSearchParams(
+						(prev) => {
+							prev.set("offset", (pageSize * page).toString());
+							return prev;
+						},
+						{ replace: true }
+					);
 				}}
 				checkboxSelection={true}
 				rowSelectionModel={rowSelectionModel}

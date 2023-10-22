@@ -14,11 +14,7 @@ import { useSearchParams } from "react-router-dom";
 import { useEffect } from "react";
 
 export function Filter() {
-	const [searchParams, setSearchParams] = useSearchParams({
-		search: "",
-		role: "ANY",
-		employeeType: "ANY",
-	});
+	const [searchParams, setSearchParams] = useSearchParams();
 
 	const search = searchParams.get("search") ?? "";
 	const role = (searchParams.get("role") as PersonRole) ?? "ANY";
@@ -26,19 +22,14 @@ export function Filter() {
 		(searchParams.get("employeeType") as EmployeeType) ?? "ANY";
 
 	const onReset = () => {
-		setSearchParams((prev) => {
-			prev.set("search", "");
-			prev.set("role", "ANY");
-			prev.set("employeeType", "ANY");
-			return prev;
-		});
+		setSearchParams({});
 	};
 
 	useEffect(() => {
 		if (role === "STUDENT" || role === "ANY") {
 			setSearchParams(
 				(prev) => {
-					prev.set("employeeType", "ANY");
+					prev.delete("employeeType");
 					return prev;
 				},
 				{ replace: true }
