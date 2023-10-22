@@ -1,5 +1,10 @@
-import React, { useCallback } from "react";
-import { DataGrid, GridColDef, GridSortModel } from "@mui/x-data-grid";
+import { useCallback } from "react";
+import {
+	DataGrid,
+	GridColDef,
+	GridSortDirection,
+	GridSortModel,
+} from "@mui/x-data-grid";
 import { Person } from "../types";
 import { Box } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
@@ -17,11 +22,13 @@ export default function Table() {
 
 	const pageSize = parseInt(searchParams.get("pageSize") ?? "10", 10);
 
+	const sortingOrder: GridSortDirection[] = ["asc", "desc"];
+
 	const handleSortModelChange = useCallback(
 		(sortModel: GridSortModel) => {
 			setSearchParams(
 				(prev) => {
-					prev.set("sort", sortModel[0].field as string);
+					prev.set("sort", sortModel[0].field);
 					prev.set("sortDirection", sortModel[0].sort as string);
 					return prev;
 				},
@@ -38,13 +45,21 @@ export default function Table() {
 			headerName: "First Name",
 			width: 150,
 			editable: true,
+			sortingOrder,
 		},
-		{ field: "lastName", headerName: "Last Name", width: 150, editable: true },
+		{
+			field: "lastName",
+			headerName: "Last Name",
+			width: 150,
+			editable: true,
+			sortingOrder,
+		},
 		{
 			field: "email",
 			headerName: "Email",
 			width: 250,
 			editable: true,
+			sortingOrder,
 		},
 		{
 			field: "role",
@@ -53,6 +68,7 @@ export default function Table() {
 			editable: true,
 			type: "singleSelect",
 			valueOptions: ["STUDENT", "EMPLOYEE"],
+			sortingOrder,
 		},
 		{
 			field: "employeeType",
@@ -61,6 +77,7 @@ export default function Table() {
 			editable: true,
 			type: "singleSelect",
 			valueOptions: ["FULL_TIME", "PART_TIME"],
+			sortingOrder,
 		},
 	];
 
@@ -83,12 +100,6 @@ export default function Table() {
 					setSearchParams(
 						(prev) => {
 							prev.set("pageSize", pageSize.toString());
-							return prev;
-						},
-						{ replace: true }
-					);
-					setSearchParams(
-						(prev) => {
 							prev.set("offset", (pageSize * page).toString());
 							return prev;
 						},

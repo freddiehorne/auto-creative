@@ -35,6 +35,15 @@ export function Filter() {
 				{ replace: true }
 			);
 		}
+		if (role === "ANY") {
+			setSearchParams(
+				(prev) => {
+					prev.delete("role");
+					return prev;
+				},
+				{ replace: true }
+			);
+		}
 	}, [role, setSearchParams]);
 
 	return (
