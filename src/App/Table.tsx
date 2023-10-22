@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import {
 	DataGrid,
+	GridCellParams,
 	GridColDef,
 	GridSortDirection,
 	GridSortModel,
@@ -11,6 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import { setRowSelectionModel } from "../redux/gridSlice";
 import { useSearchParams } from "react-router-dom";
+import { mutateApi } from "../api";
 
 export default function Table() {
 	const dispatch = useDispatch();
@@ -37,6 +39,10 @@ export default function Table() {
 		},
 		[setSearchParams]
 	);
+
+	const isCellEditable = (params: GridCellParams) => {
+		return params.field !== "employeeType" || params.row.role === "EMPLOYEE";
+	};
 
 	const columns: GridColDef[] = [
 		{ field: "id", headerName: "ID", width: 70 },
@@ -86,7 +92,7 @@ export default function Table() {
 			<DataGrid<Person>
 				rows={items}
 				columns={columns}
-				isCellEditable={() => false}
+				isCellEditable={(params) => isCellEditable(params)}
 				loading={loading}
 				disableColumnFilter
 				disableRowSelectionOnClick
@@ -113,6 +119,16 @@ export default function Table() {
 				}}
 				sortingMode="server"
 				onSortModelChange={handleSortModelChange}
+				processRowUpdate={(updatedRow, originalRow) => {
+					if (updatedRow.role === "STUDENT") {
+						updatedRow.employeeType = null;
+					}
+
+					if (updatedRow.role === "EMPLOYEE") {
+						updatedRow.employeeType = updatedRow.employeeType ?? "FULL_TIME";
+					}
+					return mutateApi(originalRow.id, updatedRow);
+				}}
 			/>
 		</Box>
 	);
