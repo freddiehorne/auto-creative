@@ -49,6 +49,18 @@ export function Filter() {
 		}
 	}, [role, setSearchParams]);
 
+	useEffect(() => {
+		if (search === "") {
+			setSearchParams(
+				(prev) => {
+					prev.delete("search");
+					return prev;
+				},
+				{ replace: true }
+			);
+		}
+	}, [search, setSearchParams]);
+
 	return (
 		<Box my={4}>
 			<Typography variant="h5">Search Filter</Typography>
